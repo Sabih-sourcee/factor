@@ -1,0 +1,99 @@
+1. COB Series
+
+✅ COB Lums
+🔴 SASA
+✅ C Series
+
+2. Downlights
+
+✅ Alkor
+✅ Glow
+✅ Range (Downlight)
+✅ Star
+
+3. Mercury Series
+
+✅ Mercury Circle Series
+✅ Mercury Square Series
+✅ Mercury Surface
+
+4. DC Series
+
+✅ DC Solo Bulb
+🔴 Orion DC
+
+5. LED Bulbs
+
+✅ Blaz
+✅ Lomo
+✅ Range Bulb
+
+6. Tubelights
+
+✅ M3 Mini
+🔴 M Series
+✅ TU Series
+✅ Zeno
+
+7. Flood Lights
+
+✅ Mars Series
+✅ Venus Series
+✅ RGB Reflector Flood Lights
+
+8. Track Lights
+
+✅ Tracks
+✅ Track Light
+🔴 Track Spot Light
+
+9. Industrial Lighting
+
+✅ Highbay
+
+10. Panel Lights
+
+✅ PL-5
+✅ PL-14
+
+11. Street Lights
+
+✅ Solar Street Light
+✅ St Light
+✅ Serene Street Light
+
+12. Architectural Lighting
+
+✅ Lime Rope
+✅ Glossy
+🔴 Profile Light
+🔴 Lazer Blade Light
+✅ Aura Rope Light
+✅ Flowy Rope Light
+✅ Gleam Rope Light
+🔴 Linear LED Light
+
+13. Premium Products
+
+✅ Tubix
+🔴 Lux
+🔴 Optima
+🔴 Elite
+✅ Premium Solar Street Light
+🔴 Hile Flood Light
+🔴 Hila Street Light
+
+14. PVC Tapes
+
+✅ Match
+✅ Klas
+
+15. Breaker Series
+
+✅ MCB (Miniature Circuit Breaker Series)
+🔴 Surge Protection Device (SPD)
+
+16. Devices
+
+🔴 VAKWH Voltage Protector
+🔴 Hear Aerosol Fire Extinguisher Device
