@@ -313,16 +313,18 @@ export function CategoryPage() {
         @keyframes float2 { 0%, 100% { transform: translate3d(0,0,50px) rotateY(5deg); } 50% { transform: translate3d(20px,35px,80px) rotateY(8deg); } }
         @keyframes float3 { 0%, 100% { transform: translate3d(0,0,20px) rotateX(10deg); } 50% { transform: translate3d(-15px,-10px,50px) rotateX(5deg); } }
         @keyframes float4 { 0%, 100% { transform: translate3d(0,0,80px) rotateZ(-2deg); } 50% { transform: translate3d(5px,25px,110px) rotateZ(2deg); } }
+        @keyframes float5 { 0%, 100% { transform: translate3d(0,0,60px) rotateX(-5deg) rotateY(5deg); } 50% { transform: translate3d(-10px,15px,90px) rotateX(2deg) rotateY(8deg); } }
         /* Desktop (> 1023px): all cards float */
         @media (min-width: 1024px) {
           .card-3d-1 { animation: float1 6s ease-in-out infinite; }
           .card-3d-2 { animation: float2 7s ease-in-out infinite; }
           .card-3d-3 { animation: float3 8s ease-in-out infinite; }
           .card-3d-4 { animation: float4 5s ease-in-out infinite; }
+          .card-3d-5 { animation: float5 6.5s ease-in-out infinite; }
         }
         /* Mobile and Tablet (< 1024px): no floating animation */
         @media (max-width: 1023px) {
-          .card-3d-1, .card-3d-2, .card-3d-3, .card-3d-4 { animation: none !important; }
+          .card-3d-1, .card-3d-2, .card-3d-3, .card-3d-4, .card-3d-5 { animation: none !important; }
           .perspective-container { display: none !important; }
         }
         .perspective-container { perspective: 1200px; transform-style: preserve-3d; }
@@ -532,40 +534,51 @@ export function CategoryPage() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
-            {/* Right Visuals */}
-            <div className="w-full md:w-[55%] h-[500px] md:h-[650px] relative perspective-container">
+            {/* Right Visuals - 3-2 Grid Layout */}
+            <div className="w-full md:w-[55%] h-[500px] md:h-[600px] relative perspective-container">
               <div className="parallax-wrapper w-full h-full relative flex items-center justify-center mobile-snap">
-                {/* Card 1: COB LUMS - Top */}
-                <div className="card-3d-1 snap-item absolute top-[5%] left-[5%] md:top-[10%] md:left-[10%] xl:left-[25%] w-[160px] md:w-[200px] xl:w-[240px] bg-white p-[16px] xl:p-[24px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-20">
-                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-4 lg:mb-6">
-                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://factorled.pk/wp-content/uploads/2026/01/lum-3-1-300x274.jpg" alt="COB LUMS" referrerPolicy="no-referrer" />
+                {/* TOP ROW - 3 Cards */}
+                {/* Card 1: RESIDENTIAL → TU Series - Top Left */}
+                <div className="card-3d-1 snap-item absolute md:top-[8%] md:left-[5%] w-[clamp(150px,22%,200px)] bg-white p-[16px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-20">
+                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-3">
+                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="/Assets/product pics/TU-60.png" alt="TU Series" referrerPolicy="no-referrer" />
                   </div>
-                  <span className="font-[Poppins] font-medium text-[10px] lg:text-[11px] text-[#00B0CB] block mb-2 uppercase tracking-[0.18em]">// Residential</span>
-                  <h4 className="font-heading text-lg lg:text-xl font-extrabold text-black uppercase">COB LUMS</h4>
+                  <span className="font-[Poppins] font-medium text-[10px] text-[#00B0CB] block mb-1 uppercase tracking-[0.18em]">// Residential</span>
+                  <h4 className="font-heading text-[16px] font-extrabold text-black uppercase">Residential</h4>
                 </div>
-                {/* Card 2: HIGHBAY - beneath COB LUMS */}
-                <div className="card-3d-2 snap-item absolute top-[35%] left-[5%] md:top-[calc(10%+200px+30px)] md:left-[10%] xl:top-[calc(10%+240px+50px)] xl:left-[25%] w-[160px] md:w-[200px] xl:w-[240px] bg-white p-[16px] xl:p-[24px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-10">
-                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-4 lg:mb-6">
-                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://factorled.pk/wp-content/uploads/2026/01/2-scaled-1-300x300.jpg" alt="HIGHBAY" referrerPolicy="no-referrer" />
+                {/* Card 2: INDUSTRIAL → Highbay - Top Center */}
+                <div className="card-3d-2 snap-item absolute md:top-[8%] md:left-[38%] w-[clamp(150px,22%,200px)] bg-white p-[16px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-10">
+                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-3">
+                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="/Assets/product pics/13_Highbay1.jpg.jpeg" alt="Highbay" referrerPolicy="no-referrer" />
                   </div>
-                  <span className="font-[Poppins] font-medium text-[10px] lg:text-[11px] text-[#00B0CB] block mb-2 uppercase tracking-[0.18em]">// Commercial</span>
-                  <h4 className="font-heading text-lg lg:text-xl font-extrabold text-black uppercase">HIGHBAY</h4>
+                  <span className="font-[Poppins] font-medium text-[10px] text-[#00B0CB] block mb-1 uppercase tracking-[0.18em]">// Industrial</span>
+                  <h4 className="font-heading text-[16px] font-extrabold text-black uppercase">Industrial</h4>
                 </div>
-                {/* Card 3: TRACKS - right column */}
-                <div className="card-3d-3 snap-item absolute top-[5%] left-[45%] md:top-[5%] md:left-[calc(10%+200px+20px)] xl:left-[calc(25%+240px+80px)] w-[150px] md:w-[180px] xl:w-[220px] bg-white p-[16px] xl:p-[24px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-10">
-                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-4 lg:mb-6">
-                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://factorled.pk/wp-content/uploads/2026/01/tracks-300x274.jpg" alt="TRACKS" referrerPolicy="no-referrer" />
+                {/* Card 3: ARCHITECTURAL → Lazer Blade Light - Top Right */}
+                <div className="card-3d-3 snap-item absolute md:top-[8%] md:left-[71%] w-[clamp(150px,22%,200px)] bg-white p-[16px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-10">
+                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-3">
+                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="/Assets/product pics/07_Architectural-Lighting1.jpg.jpeg" alt="Lazer Blade Light" referrerPolicy="no-referrer" />
                   </div>
-                  <span className="font-[Poppins] font-medium text-[10px] lg:text-[11px] text-[#00B0CB] block mb-2 uppercase tracking-[0.18em]">// Commercial</span>
-                  <h4 className="font-heading text-lg lg:text-xl font-extrabold text-black uppercase">TRACKS</h4>
+                  <span className="font-[Poppins] font-medium text-[10px] text-[#00B0CB] block mb-1 uppercase tracking-[0.18em]">// Architectural</span>
+                  <h4 className="font-heading text-[16px] font-extrabold text-black uppercase">Architectural</h4>
                 </div>
-                {/* Card 4: MARS Series - right column, beneath */}
-                <div className="card-3d-4 snap-item absolute top-[40%] left-[45%] md:top-[calc(10%+200px+30px)] md:left-[calc(10%+200px+20px)] xl:top-[calc(10%+240px+50px)] xl:left-[calc(25%+240px+60px)] w-[160px] md:w-[200px] xl:w-[260px] bg-white p-[16px] xl:p-[24px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-30">
-                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-4 lg:mb-6">
-                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://factorled.pk/wp-content/uploads/2026/01/mars-30-300x274.jpg" alt="MARS SERIES" referrerPolicy="no-referrer" />
+
+                {/* BOTTOM ROW - 2 Cards */}
+                {/* Card 4: COMMERCIAL → Track Light - Bottom Left */}
+                <div className="card-3d-4 snap-item absolute md:top-[52%] md:left-[22%] w-[clamp(150px,22%,200px)] bg-white p-[16px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-30">
+                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-3">
+                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="/Assets/product pics/05_track-light1.jpg.jpeg" alt="Track Light" referrerPolicy="no-referrer" />
                   </div>
-                  <span className="font-[Poppins] font-medium text-[10px] lg:text-[11px] text-[#00B0CB] block mb-2 uppercase tracking-[0.18em]">// Industrial</span>
-                  <h4 className="font-heading text-lg lg:text-xl font-extrabold text-black uppercase">MARS SERIES</h4>
+                  <span className="font-[Poppins] font-medium text-[10px] text-[#00B0CB] block mb-1 uppercase tracking-[0.18em]">// Commercial</span>
+                  <h4 className="font-heading text-[16px] font-extrabold text-black uppercase">Commercial</h4>
+                </div>
+                {/* Card 5: PREMIUM → Elite - Bottom Right */}
+                <div className="card-3d-5 snap-item absolute md:top-[52%] md:left-[55%] w-[clamp(150px,22%,200px)] bg-white p-[16px] shadow-2xl rounded-xl border border-[#F0F0F0] group hover:z-50 transition-all z-40">
+                  <div className="relative overflow-hidden bg-[#F9F9F7] aspect-square rounded-lg mb-3">
+                    <img className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="/Assets/product pics/elite.png" alt="Elite" referrerPolicy="no-referrer" />
+                  </div>
+                  <span className="font-[Poppins] font-medium text-[10px] text-[#00B0CB] block mb-1 uppercase tracking-[0.18em]">// Premium</span>
+                  <h4 className="font-heading text-[16px] font-extrabold text-black uppercase">Premium</h4>
                 </div>
               </div>
             </div>
@@ -603,13 +616,13 @@ export function CategoryPage() {
             </div>
 
             {/* Product Grid */}
-            <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-[50px] transition-opacity duration-200 ${isFading ? "fade-out" : "fade-in"}`}>
+            <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[clamp(12px,2vw,32px)] transition-opacity duration-200 ${isFading ? "fade-out" : "fade-in"}`}>
               {activeCategory !== "breaker-series" && activeCategory !== "devices" && products.map((product, index) => (
                 <div
                   key={product.name}
                   className={`stagger-item product-card ${product.hasLocalImage !== false ? 'bg-white' : 'bg-[#231F20]'} rounded-[20px] border-[1.5px] border-[#E8E8E8] overflow-hidden ${visibleItems.has(index) ? "visible" : ""}`}
                 >
-                  <div className={`${product.hasLocalImage !== false ? 'bg-[#F4F4F2]' : 'bg-[#231F20]'} aspect-square p-8 flex items-center justify-center relative overflow-hidden`}>
+                  <div className={`${product.hasLocalImage !== false ? 'bg-[#F4F4F2]' : 'bg-[#231F20]'} aspect-square p-[clamp(16px,4vw,32px)] flex items-center justify-center relative overflow-hidden`}>
                     {product.hasLocalImage !== false ? (
                       product.images && product.images.length > 1 ? (
                         <>
@@ -652,9 +665,9 @@ export function CategoryPage() {
                     )}
                   </div>
                   <div className="h-[1.5px] bg-[#E8E8E8] w-full"></div>
-                  <div className="p-6">
-                    <span className={`block text-[10px] font-semibold ${product.hasLocalImage !== false ? 'text-[#00B0CB]' : 'text-[#00B0CB]'} uppercase tracking-widest mb-2`}>// {displayCategoryName}</span>
-                    <h3 className={`text-[18px] font-bold ${product.hasLocalImage !== false ? 'text-[#231F20]' : 'text-white'} mb-6`}>{product.name}</h3>
+                  <div className="p-[clamp(12px,3vw,24px)]">
+                    <span className={`block text-[clamp(9px,1vw,11px)] font-semibold ${product.hasLocalImage !== false ? 'text-[#00B0CB]' : 'text-[#00B0CB]'} uppercase tracking-widest mb-2`}>// {displayCategoryName}</span>
+                    <h3 className={`text-[clamp(14px,1.5vw,18px)] font-bold ${product.hasLocalImage !== false ? 'text-[#231F20]' : 'text-white'} mb-[clamp(12px,2vw,24px)]`}>{product.name}</h3>
                     <div className="flex flex-col gap-2">
                       <Link 
                         to={`/product/${encodeURIComponent(product.name)}`}

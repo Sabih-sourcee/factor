@@ -25,21 +25,11 @@ import { ProductPage } from "./components/ProductPage";
 const LOGO_FALLBACK_URL = "https://factorled.pk/wp-content/uploads/2025/01/Factor-Logo-negative-01-scaled.png";
 
 const CATEGORIES = [
-  { name: "LED Bulbs", id: "01", img: "/Assets/product pics/Gemini_Generated_Image_iq42eaiq42eaiq42.png", hasLocalImage: true },
-  { name: "Down Lights", id: "02", img: "/Assets/product pics/06_star-downlight1.jpg.jpeg", hasLocalImage: true },
-  { name: "Track Lights", id: "03", img: "/Assets/product pics/05_track-light1.jpg.jpeg", hasLocalImage: true },
-  { name: "COB Lights", id: "04", img: "/Assets/product pics/02_cob-light1.jpg.jpeg", hasLocalImage: true },
-  { name: "Highbay Lights", id: "05", img: "/Assets/product pics/13_Highbay1.jpg.jpeg", hasLocalImage: true },
-  { name: "Mercury Lights", id: "06", img: "/Assets/product pics/03_Mercury-Series1.jpg.jpeg", hasLocalImage: true },
-  { name: "Tube Lights", id: "07", img: "/Assets/product pics/01_Tubelights1t.jpg.jpeg", hasLocalImage: true },
-  { name: "Street Lights", id: "08", img: "/Assets/product pics/08_Street-Lights1.jpg.jpeg", hasLocalImage: true },
-  { name: "Flood Lights", id: "09", img: "/Assets/product pics/09_Flood-Lights1.jpg.jpeg", hasLocalImage: true },
-  { name: "Panel Lights", id: "10", img: "/Assets/product pics/04_Panel-Lights1p.jpg.jpeg", hasLocalImage: true },
-  { name: "Premium Products", id: "11", img: "/Assets/product pics/10_Premium-Products1.jpg.jpeg", hasLocalImage: true },
-  { name: "Architectural", id: "12", img: "/Assets/product pics/07_Architectural-Lighting1.jpg.jpeg", hasLocalImage: true },
-  { name: "PVC Tapes", id: "13", img: "/Assets/product pics/15_PVC-Tapes1.jpg.jpeg", hasLocalImage: true },
-  { name: "Breaker Series", id: "14", img: "/Assets/product pics/12_Breaker-Series1.jpg.jpeg", hasLocalImage: true },
-  { name: "Devices", id: "15", img: "/Assets/product pics/14_Devices1.jpg.jpeg", hasLocalImage: true },
+  { name: "Residential", id: "01", img: "/Assets/product pics/TU-60.png", hasLocalImage: true, url: "https://factorled.pk/residential/" },
+  { name: "Industrial", id: "02", img: "/Assets/product pics/13_Highbay1.jpg.jpeg", hasLocalImage: true, url: "https://factorled.pk/industrial/" },
+  { name: "Architectural", id: "03", img: "/Assets/product pics/07_Architectural-Lighting1.jpg.jpeg", hasLocalImage: true, url: "https://factorled.pk/architectural/" },
+  { name: "Commercial", id: "04", img: "/Assets/product pics/05_track-light1.jpg.jpeg", hasLocalImage: true, url: "https://factorled.pk/commercial-lighting/" },
+  { name: "Premium", id: "05", img: "/Assets/product pics/elite.png", hasLocalImage: true, url: "https://factorled.pk/premium/" },
 ];
 
 const SOLUTIONS = [
@@ -450,16 +440,19 @@ function HomePage() {
             </motion.div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5 md:gap-[50px]">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-[clamp(12px,2vw,32px)]">
             {CATEGORIES.map((cat) => (
-              <motion.div 
+              <motion.a
                 key={cat.id}
+                href={cat.url}
+                target="_blank"
+                rel="noreferrer"
                 variants={itemVariants}
-                className={`group border border-[#E8E8E8] p-6 rounded-[20px] overflow-hidden transition-all duration-300 hover:shadow-lg ${
+                className={`group block border border-[#E8E8E8] p-[clamp(12px,2vw,24px)] rounded-[20px] overflow-hidden transition-all duration-300 hover:shadow-lg ${
                   cat.hasLocalImage ? 'bg-white' : 'bg-[#231F20]'
                 }`}
               >
-                <div className={`h-64 flex items-center justify-center mb-8 overflow-hidden rounded-lg ${
+                <div className={`h-[clamp(180px,20vw,280px)] flex items-center justify-center mb-[clamp(12px,2vw,24px)] overflow-hidden rounded-lg ${
                   cat.hasLocalImage ? '' : 'bg-[#231F20]'
                 }`}>
                   {cat.hasLocalImage ? (
@@ -476,11 +469,11 @@ function HomePage() {
                     />
                   )}
                 </div>
-                <div className={`label-technical text-[10px] mb-2 ${cat.hasLocalImage ? '' : 'text-[#00B0CB]'}`}>Category {cat.id}</div>
-                <h3 className={`font-[Poppins] font-600 text-[17px] mt-1 ${
+                <div className={`label-technical text-[clamp(9px,1vw,11px)] mb-2 ${cat.hasLocalImage ? '' : 'text-[#00B0CB]'}`}>Category {cat.id}</div>
+                <h3 className={`font-[Poppins] font-600 text-[clamp(14px,1.5vw,18px)] mt-1 ${
                   cat.hasLocalImage ? 'text-[#231F20]' : 'text-white'
                 }`}>{cat.name}</h3>
-              </motion.div>
+              </motion.a>
             ))}
           </div>
         </motion.div>

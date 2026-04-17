@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
-import { Menu, X, ChevronLeft, ChevronRight, Thermometer, ZapOff, Download, FileText, BookOpen, PenTool, CheckCircle2 } from "lucide-react";
+import { Menu, X, Thermometer, ZapOff, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Logo } from "./Logo";
 
@@ -112,6 +112,74 @@ interface RelatedProduct {
   category: string;
   wattage: string;
   image: string;
+  url: string;
+}
+
+// Smart matching logic for related products
+function generateRelatedProducts(currentProductName: string, currentCategory: string): RelatedProduct[] {
+  // Define category relationships for smart matching
+  const categoryGroups: Record<string, string[]> = {
+    "COB Series": ["COB Series", "Downlights", "Track Lights"],
+    "Downlights": ["Downlights", "COB Series", "Panel Lights"],
+    "Track Lights": ["Track Lights", "COB Series", "Architectural Lighting"],
+    "Panel Lights": ["Panel Lights", "Downlights", "Architectural Lighting"],
+    "Architectural Lighting": ["Architectural Lighting", "Track Lights", "Panel Lights", "Premium Products"],
+    "LED Bulbs": ["LED Bulbs", "DC Series", "Tubelights"],
+    "Tubelights": ["Tubelights", "LED Bulbs", "Panel Lights"],
+    "Flood Lights": ["Flood Lights", "Street Lights", "Industrial Lighting"],
+    "Street Lights": ["Street Lights", "Flood Lights", "Industrial Lighting"],
+    "Industrial Lighting": ["Industrial Lighting", "Flood Lights", "Street Lights"],
+    "Mercury Series": ["Mercury Series", "Panel Lights", "Downlights"],
+    "Premium Products": ["Premium Products", "Architectural Lighting", "COB Series"],
+    "PVC Tapes": ["PVC Tapes"],
+    "Breaker Series": ["Breaker Series", "Devices"],
+    "Devices": ["Devices", "Breaker Series"]
+  };
+
+  // Get related categories
+  const relatedCategories = categoryGroups[currentCategory] || [currentCategory];
+  
+  // Find products in related categories
+  let candidates = allProducts.filter(p => {
+    if (p.name === currentProductName) return false;
+    // Match by category
+    if (relatedCategories.includes(p.category || "")) return true;
+    // Match by name characteristics (e.g., "COB" in name)
+    if (currentProductName.toLowerCase().includes("cob") && p.name.toLowerCase().includes("cob")) return true;
+    if (currentProductName.toLowerCase().includes("round") && p.name.toLowerCase().includes("round")) return true;
+    if (currentProductName.toLowerCase().includes("surface") && p.name.toLowerCase().includes("surface")) return true;
+    return false;
+  });
+
+  // If not enough related products, add random ones from same category
+  if (candidates.length < 4) {
+    const sameCategory = allProducts.filter(p => 
+      p.category === currentCategory && 
+      p.name !== currentProductName &&
+      !candidates.find(c => c.name === p.name)
+    );
+    candidates = [...candidates, ...sameCategory];
+  }
+
+  // If still not enough, add any other products
+  if (candidates.length < 4) {
+    const others = allProducts.filter(p => 
+      p.name !== currentProductName &&
+      !candidates.find(c => c.name === p.name)
+    );
+    candidates = [...candidates, ...others];
+  }
+
+  // Shuffle and take 4
+  const shuffled = [...candidates].sort(() => 0.5 - Math.random()).slice(0, 4);
+  
+  return shuffled.map(p => ({
+    name: p.name,
+    category: p.category || "Factor LED",
+    wattage: "From " + ["7W", "10W", "15W", "20W", "30W"][Math.floor(Math.random() * 5)],
+    image: p.hasLocalImage ? (p.images?.[0] || p.img) : p.img,
+    url: p.url
+  }));
 }
 
 // Generate dynamic specs based on product name
@@ -147,25 +215,9 @@ function generateFeatures(productName: string) {
   return features;
 }
 
-// Generate related products (3 random products from same category or all products)
-function generateRelatedProducts(currentProductName: string, category: string): RelatedProduct[] {
-  const sameCategory = allProducts.filter(p => p.category === category && p.name !== currentProductName);
-  const otherProducts = allProducts.filter(p => p.name !== currentProductName);
-  
-  const candidates = sameCategory.length >= 3 ? sameCategory : otherProducts;
-  const shuffled = [...candidates].sort(() => 0.5 - Math.random()).slice(0, 4);
-  
-  return shuffled.map(p => ({
-    name: p.name,
-    category: p.category || "Factor LED",
-    wattage: "From " + ["7W", "10W", "15W", "20W", "30W"][Math.floor(Math.random() * 5)],
-    image: p.hasLocalImage ? p.img : LOGO_FALLBACK_URL
-  }));
-}
-
 export function ProductPage() {
   const { productId } = useParams<{ productId: string }>();
-  const [activeTab, setActiveTab] = useState<"details" | "features" | "downloads">("details");
+  const [activeTab, setActiveTab] = useState<"features" | "applications">("features");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -199,14 +251,6 @@ export function ProductPage() {
     };
   }, [product]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const scrollRelatedProducts = (direction: "left" | "right") => {
     const container = document.getElementById("related-products-scroll");
     if (container) {
@@ -214,6 +258,14 @@ export function ProductPage() {
       container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 404 State - Product not found
   if (!productData) {
@@ -403,24 +455,6 @@ export function ProductPage() {
             <p className="text-black/50 text-sm sm:text-base md:text-lg leading-relaxed font-light">
               {productData.description}
             </p>
-            <div className="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8 py-4 md:py-6 border-y border-black/10">
-              <div>
-                <p className="text-black/40 text-[10px] sm:text-[11px] uppercase tracking-widest mb-1">Wattage Range</p>
-                <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#231F20]">{productData.wattageRange}</p>
-              </div>
-              <div>
-                <p className="text-black/40 text-[10px] sm:text-[11px] uppercase tracking-widest mb-1">CCT Options</p>
-                <p className="text-sm sm:text-base md:text-lg font-medium text-[#231F20]/90">{productData.cctOptions}</p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <button className="w-full sm:w-auto bg-[#00B0CB] text-white px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-[#0099B2] hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-[#00B0CB]/20">
-                Enquire Now
-              </button>
-              <button className="w-full sm:w-auto border border-black/20 text-[#231F20] px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-full font-bold text-sm md:text-base hover:border-[#00B0CB] hover:text-[#00B0CB] transition-all duration-300">
-                View Specs
-              </button>
-            </div>
           </div>
         </section>
 
@@ -429,16 +463,6 @@ export function ProductPage() {
           <div className="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12">
             {/* Tab Headers */}
             <div className="flex gap-4 md:gap-8 lg:gap-12 border-b border-black/10 mb-6 md:mb-8 lg:mb-12 overflow-x-auto pb-4">
-              <button
-                onClick={() => setActiveTab("details")}
-                className={`font-semibold text-sm sm:text-base md:text-lg pb-3 md:pb-4 whitespace-nowrap transition-all ${
-                  activeTab === "details"
-                    ? "text-[#00B0CB] border-b-2 border-[#00B0CB]"
-                    : "text-black/40 hover:text-[#231F20]/80"
-                }`}
-              >
-                Product Details
-              </button>
               <button
                 onClick={() => setActiveTab("features")}
                 className={`font-semibold text-sm sm:text-base md:text-lg pb-3 md:pb-4 whitespace-nowrap transition-all ${
@@ -450,63 +474,18 @@ export function ProductPage() {
                 Features
               </button>
               <button
-                onClick={() => setActiveTab("downloads")}
+                onClick={() => setActiveTab("applications")}
                 className={`font-semibold text-sm sm:text-base md:text-lg pb-3 md:pb-4 whitespace-nowrap transition-all ${
-                  activeTab === "downloads"
+                  activeTab === "applications"
                     ? "text-[#00B0CB] border-b-2 border-[#00B0CB]"
                     : "text-black/40 hover:text-[#231F20]/80"
                 }`}
               >
-                Downloads
+                Applications
               </button>
             </div>
 
             {/* Tab Content */}
-            {activeTab === "details" && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
-                <div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 lg:mb-8 text-[#231F20]">Technical Specifications</h3>
-                  <div className="space-y-1 md:space-y-2 lg:space-y-4">
-                    {productData.specs.map((spec, idx) => (
-                      <div key={idx} className="flex justify-between items-center py-2 md:py-3 lg:py-4 border-b border-black/5 group">
-                        <span className="text-black/50 group-hover:text-[#231F20] transition-colors text-xs sm:text-sm md:text-base">{spec.label}</span>
-                        <span className={`font-medium text-xs sm:text-sm md:text-base ${spec.highlight ? "text-[#00B0CB]" : "text-[#231F20]"}`}>
-                          {spec.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 lg:mb-8 text-[#231F20]">Key Benefits</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
-                    {productData.features.map((feature, idx) => (
-                      <div key={idx} className="glass-card p-4 md:p-5 lg:p-6 rounded-xl md:rounded-2xl group hover:border-[#00B0CB]/30 transition-all duration-300 h-full">
-                        <div className="text-[#00B0CB] mb-2 md:mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
-                          {feature.icon === "thermostat" && <Thermometer className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />}
-                          {feature.icon === "flash_off" && <ZapOff className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10" />}
-                        </div>
-                        <h4 className="font-semibold text-sm md:text-base lg:text-lg mb-1 md:mb-2 text-[#231F20]">{feature.title}</h4>
-                        <p className="text-black/40 text-xs md:text-sm font-light">{feature.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="glass-card p-4 md:p-6 lg:p-8 rounded-xl md:rounded-2xl lg:rounded-3xl border-dashed border-black/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <Download className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#00B0CB]" />
-                      <div>
-                        <h4 className="font-semibold text-[#231F20] text-sm md:text-base">Datasheet & Brochure</h4>
-                        <p className="text-black/40 text-xs md:text-sm">Full PDF documentation (4.2 MB)</p>
-                      </div>
-                    </div>
-                    <button className="bg-black/5 hover:bg-black/10 text-[#231F20] px-3 md:px-4 lg:px-6 py-2 rounded-full text-xs md:text-sm font-medium transition-colors w-full sm:w-auto">
-                      Download
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {activeTab === "features" && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
                 <div>
@@ -550,46 +529,222 @@ export function ProductPage() {
               </div>
             )}
 
-            {activeTab === "downloads" && (
-              <div className="max-w-2xl mx-auto">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 lg:mb-8 text-[#231F20]">Download Resources</h3>
-                <div className="space-y-3 md:space-y-4">
-                  <div className="glass-card p-4 md:p-5 lg:p-6 rounded-xl md:rounded-2xl flex items-center justify-between group hover:border-[#00B0CB]/30 transition-all">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <FileText className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[#00B0CB]" />
-                      <div>
-                        <h4 className="font-semibold text-[#231F20] text-sm md:text-base">Product Datasheet</h4>
-                        <p className="text-black/40 text-xs md:text-sm">PDF • 2.4 MB</p>
-                      </div>
-                    </div>
-                    <button className="bg-[#00B0CB] text-white px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium hover:bg-[#0099B2] transition-colors">
-                      Download
-                    </button>
+            {activeTab === "applications" && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
+                <div>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 lg:mb-8 text-[#231F20]">Real-World Applications</h3>
+                  <p className="text-black/60 text-sm sm:text-base md:text-lg leading-relaxed mb-6 md:mb-8">
+                    The {productData.name} is engineered for specific environments where performance and reliability matter. Discover how this lighting solution transforms spaces across different sectors.
+                  </p>
+                  <div className="space-y-4 md:space-y-6">
+                    {productData.category?.includes("Residential") || productData.name.includes("TU") ? (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Home Interiors</h4>
+                            <p className="text-black/50 text-sm md:text-base">Perfect for living rooms, bedrooms, and dining areas where warm, comfortable lighting creates the right ambiance for daily living.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Kitchen & Task Areas</h4>
+                            <p className="text-black/50 text-sm md:text-base">Ideal for under-cabinet lighting, kitchen islands, and workspaces where focused illumination supports cooking and household tasks.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Apartments & Housing</h4>
+                            <p className="text-black/50 text-sm md:text-base">Compact design and efficient performance make it suitable for modern apartments, condominiums, and residential complexes.</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : productData.category?.includes("Industrial") || productData.name.includes("Highbay") ? (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Warehouses & Distribution Centers</h4>
+                            <p className="text-black/50 text-sm md:text-base">High-mount installation provides uniform illumination across large storage facilities, improving visibility for inventory management and logistics operations.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Manufacturing Plants</h4>
+                            <p className="text-black/50 text-sm md:text-base">Robust construction withstands industrial environments while delivering consistent, high-output lighting for production lines and assembly areas.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Gymnasiums & Sports Halls</h4>
+                            <p className="text-black/50 text-sm md:text-base">High ceiling mounting with wide beam distribution eliminates shadows and provides glare-free lighting for athletic facilities and recreational centers.</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : productData.category?.includes("Architectural") || productData.name.includes("Lazer") || productData.name.includes("Blade") ? (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Modern Building Facades</h4>
+                            <p className="text-black/50 text-sm md:text-base">Linear precision lighting accentuates architectural lines, creating dramatic exterior illumination for contemporary buildings and landmarks.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Interior Accent Lighting</h4>
+                            <p className="text-black/50 text-sm md:text-base">Recessed and surface-mounted options provide seamless integration into ceilings and walls for sophisticated ambient lighting in lobbies, galleries, and showrooms.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Landscape & Outdoor Design</h4>
+                            <p className="text-black/50 text-sm md:text-base">Weather-resistant profiles illuminate pathways, gardens, and outdoor structures, enhancing nighttime aesthetics of architectural landscapes.</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : productData.category?.includes("Commercial") || productData.name.includes("Track") ? (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Retail Stores & Showrooms</h4>
+                            <p className="text-black/50 text-sm md:text-base">Adjustable track positioning allows precise spotlighting on merchandise, creating attractive displays that draw customer attention and enhance product presentation.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Art Galleries & Museums</h4>
+                            <p className="text-black/50 text-sm md:text-base">Directional control and high CRI rendering showcase artwork and exhibits with accurate color representation and minimal glare or UV exposure.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Hospitality & Restaurants</h4>
+                            <p className="text-black/50 text-sm md:text-base">Flexible positioning creates layered lighting schemes in hotels, cafes, and dining venues, highlighting tables, bars, and architectural features.</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : productData.category?.includes("Premium") || productData.name.includes("Elite") ? (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Luxury Residences & Villas</h4>
+                            <p className="text-black/50 text-sm md:text-base">Premium finish and superior performance meet the exacting standards of high-end residential projects, delivering exceptional lighting quality for discerning homeowners.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Corporate Headquarters</h4>
+                            <p className="text-black/50 text-sm md:text-base">Executive offices, boardrooms, and reception areas benefit from refined aesthetics and consistent color temperature for professional environments.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Boutique Hotels & Spas</h4>
+                            <p className="text-black/50 text-sm md:text-base">Designer-grade fixtures enhance premium hospitality spaces, providing guests with sophisticated lighting experiences in suites, lounges, and wellness areas.</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Commercial Spaces</h4>
+                            <p className="text-black/50 text-sm md:text-base">Ideal for offices, retail stores, and public buildings requiring reliable, energy-efficient illumination with professional-grade performance.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Industrial Facilities</h4>
+                            <p className="text-black/50 text-sm md:text-base">Robust construction and high-output performance suit manufacturing plants, warehouses, and production environments demanding durable lighting solutions.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 md:gap-4 items-start">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00B0CB]/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB]" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-base md:text-lg text-[#231F20] mb-1">Outdoor & Street Lighting</h4>
+                            <p className="text-black/50 text-sm md:text-base">Weather-resistant housing and wide-area light distribution make it suitable for parking lots, roadways, and public outdoor spaces.</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="glass-card p-4 md:p-5 lg:p-6 rounded-xl md:rounded-2xl flex items-center justify-between group hover:border-[#00B0CB]/30 transition-all">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <BookOpen className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[#00B0CB]" />
+                </div>
+                <div className="glass-card p-4 md:p-6 lg:p-8 rounded-xl md:rounded-2xl lg:rounded-3xl">
+                  <h4 className="font-semibold text-base md:text-lg lg:text-xl text-[#231F20] mb-3 md:mb-4">Key Benefits by Environment</h4>
+                  <ul className="space-y-3 md:space-y-4">
+                    <li className="flex items-start gap-2 md:gap-3">
+                      <ZapOff className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB] shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-[#231F20] text-sm md:text-base">Product Brochure</h4>
-                        <p className="text-black/40 text-xs md:text-sm">PDF • 1.8 MB</p>
+                        <span className="font-medium text-[#231F20] text-sm md:text-base block">Energy Efficiency</span>
+                        <span className="text-black/50 text-xs md:text-sm">Reduces electricity consumption by up to 80% compared to traditional lighting</span>
                       </div>
-                    </div>
-                    <button className="bg-[#00B0CB] text-white px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium hover:bg-[#0099B2] transition-colors">
-                      Download
-                    </button>
-                  </div>
-                  <div className="glass-card p-4 md:p-5 lg:p-6 rounded-xl md:rounded-2xl flex items-center justify-between group hover:border-[#00B0CB]/30 transition-all">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <PenTool className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[#00B0CB]" />
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3">
+                      <Thermometer className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB] shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-[#231F20] text-sm md:text-base">Installation Guide</h4>
-                        <p className="text-black/40 text-xs md:text-sm">PDF • 0.8 MB</p>
+                        <span className="font-medium text-[#231F20] text-sm md:text-base block">Thermal Management</span>
+                        <span className="text-black/50 text-xs md:text-sm">Advanced heat dissipation ensures consistent performance in demanding conditions</span>
                       </div>
-                    </div>
-                    <button className="bg-[#00B0CB] text-white px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium hover:bg-[#0099B2] transition-colors">
-                      Download
-                    </button>
-                  </div>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3">
+                      <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-[#00B0CB] shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-medium text-[#231F20] text-sm md:text-base block">Long-Term Reliability</span>
+                        <span className="text-black/50 text-xs md:text-sm">50,000+ hour lifespan minimizes maintenance and replacement costs</span>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
               </div>
             )}
@@ -621,9 +776,11 @@ export function ProductPage() {
             </div>
             <div id="related-products-scroll" className="flex gap-4 md:gap-6 lg:gap-8 overflow-x-auto pb-6 md:pb-8 lg:pb-12 snap-x snap-mandatory hide-scrollbar">
               {productData.relatedProducts.map((relatedProduct, idx) => (
-                <Link
+                <a
                   key={idx}
-                  to={`/product/${encodeURIComponent(relatedProduct.name)}`}
+                  href={relatedProduct.url}
+                  target="_blank"
+                  rel="noreferrer"
                   className="min-w-[260px] sm:min-w-[290px] lg:min-w-[320px] snap-start bg-[#f2f2f2] rounded-[16px] md:rounded-[20px] lg:rounded-[24px] border border-black/5 overflow-hidden group hover:-translate-y-2 md:hover:-translate-y-4 transition-all duration-500"
                 >
                   <div className="aspect-square bg-black/5 p-4 md:p-6 lg:p-8 flex items-center justify-center relative">
@@ -639,10 +796,10 @@ export function ProductPage() {
                     <h4 className="text-base md:text-lg lg:text-xl font-bold mb-2 md:mb-4 text-[#231F20]">{relatedProduct.name}</h4>
                     <div className="flex items-center justify-between">
                       <span className="text-black/40 text-xs md:text-sm font-medium">{relatedProduct.wattage}</span>
-                      <span className="text-[#00B0CB] font-semibold text-xs md:text-sm hover:underline">Details →</span>
+                      <span className="text-[#00B0CB] font-semibold text-xs md:text-sm hover:underline">View →</span>
                     </div>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
