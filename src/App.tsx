@@ -179,7 +179,7 @@ function HomePage() {
           </div>
           
           <div className="hidden md:flex gap-12 items-center">
-            {[{label:'About Us', href:'https://factorled.pk/about-us/'}, {label:'Categories', to:'/category'}, {label:'Blogs', href:'#journal'}, {label:'Contact', href:'https://factorled.pk/contact-us/'}].map((item) => (
+            {[{label:'About Us', href:'https://factorled.pk/about-us/'}, {label:'Categories', to:'/category'}, {label:'Blogs', href:'#journal'}, {label:'Contact', to:'/contact'}].map((item) => (
               item.to ? (
                 <Link 
                   key={item.label}
@@ -235,7 +235,7 @@ function HomePage() {
               {label:'Blogs', href:'#journal'},
               {label:'Gallery', href:'https://factorled.pk/gallery/'},
               {label:'Events', href:'https://factorled.pk/events/'},
-              {label:'Contact', href:'https://factorled.pk/contact-us/'}
+              {label:'Contact', to:'/contact'}
             ].map((item, i) => (
               <motion.div
                 key={item.label}
@@ -262,15 +262,20 @@ function HomePage() {
                 )}
               </motion.div>
             ))}
-            <motion.a
-              href="https://factorled.pk/contact-us/"
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.4 }}
-              className="mt-8 bg-[#00B0CB] text-[#231F20] px-10 py-4 font-[Poppins] font-bold text-sm tracking-widest uppercase"
+              className="mt-8"
             >
-              Get a Quote
-            </motion.a>
+              <Link
+                to="/contact"
+                onClick={() => setIsMenuOpen(false)}
+                className="bg-[#00B0CB] text-[#231F20] px-10 py-4 font-[Poppins] font-bold text-sm tracking-widest uppercase inline-block"
+              >
+                Get a Quote
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </nav>
@@ -648,9 +653,13 @@ function HomePage() {
             <div>
               <h4 className="font-[Poppins] font-semibold text-[13px] text-[#231F20] uppercase tracking-wider mb-6 border-b-2 border-[#00B0CB] pb-2 inline-block">Partner With Us</h4>
               <ul className="space-y-3">
-                {[{label:'Become a Distributor', href:'https://factorled.pk/contact-us/'}, {label:'Corporate Projects', href:'https://factorled.pk/commercial-lighting/'}, {label:'Business Partnerships', href:'https://factorled.pk/contact-us/'}].map(link => (
+                {[{label:'Become a Distributor', to:'/contact'}, {label:'Corporate Projects', href:'https://factorled.pk/commercial-lighting/'}, {label:'Business Partnerships', to:'/contact'}].map(link => (
                   <li key={link.label}>
-                    <a href={link.href} target="_blank" rel="noreferrer" className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</a>
+                    {link.to ? (
+                      <Link to={link.to} className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</Link>
+                    ) : (
+                      <a href={link.href} target="_blank" rel="noreferrer" className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>

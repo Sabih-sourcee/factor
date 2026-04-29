@@ -129,15 +129,20 @@ export function Navbar({ variant = "light" }: NavbarProps) {
               )}
             </motion.div>
           ))}
-          <motion.a
-            href="https://factorled.pk/contact-us/"
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.4 }}
-            className="mt-8 bg-[#00B0CB] text-[#231F20] px-10 py-4 font-[Poppins] font-bold text-sm tracking-widest uppercase"
+            className="mt-8"
           >
-            Get a Quote
-          </motion.a>
+            <Link
+              to="/contact"
+              onClick={() => setIsMenuOpen(false)}
+              className="bg-[#00B0CB] text-[#231F20] px-10 py-4 font-[Poppins] font-bold text-sm tracking-widest uppercase inline-block"
+            >
+              Get a Quote
+            </Link>
+          </motion.div>
         </motion.div>
       )}
     </nav>

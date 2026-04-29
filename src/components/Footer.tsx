@@ -24,7 +24,7 @@ export function Footer({ variant = "light" }: FooterProps) {
             <ul className="space-y-2">
               <li><a className="text-white/60 hover:text-[#00B0CB] transition-all font-light text-sm" href="https://factorled.pk/">Shop</a></li>
               <li><a className="text-white/60 hover:text-[#00B0CB] transition-all font-light text-sm" href="https://factorled.pk/blogs/">Blogs</a></li>
-              <li><a className="text-white/60 hover:text-[#00B0CB] transition-all font-light text-sm" href="https://factorled.pk/contact-us/">Contact Us</a></li>
+              <li><Link className="text-white/60 hover:text-[#00B0CB] transition-all font-light text-sm" to="/contact">Contact Us</Link></li>
             </ul>
           </div>
           <div className="space-y-4">
@@ -92,9 +92,13 @@ export function Footer({ variant = "light" }: FooterProps) {
           <div>
             <h4 className="font-[Poppins] font-semibold text-[13px] text-[#231F20] uppercase tracking-wider mb-6 border-b-2 border-[#00B0CB] pb-2 inline-block">Partner With Us</h4>
             <ul className="space-y-3">
-              {[{label:'Become a Distributor', href:'https://factorled.pk/contact-us/'}, {label:'Corporate Projects', href:'https://factorled.pk/commercial-lighting/'}, {label:'Business Partnerships', href:'https://factorled.pk/contact-us/'}].map(link => (
+              {[{label:'Become a Distributor', to:'/contact'}, {label:'Corporate Projects', href:'https://factorled.pk/commercial-lighting/'}, {label:'Business Partnerships', to:'/contact'}].map(link => (
                 <li key={link.label}>
-                  <a href={link.href} target="_blank" rel="noreferrer" className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</a>
+                  {link.to ? (
+                    <Link to={link.to} className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</Link>
+                  ) : (
+                    <a href={link.href} target="_blank" rel="noreferrer" className="text-[#231F20]/70 hover:text-[#00B0CB] transition-colors duration-200 text-[13px] font-[Poppins]">{link.label}</a>
+                  )}
                 </li>
               ))}
             </ul>
