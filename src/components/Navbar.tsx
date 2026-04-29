@@ -45,15 +45,25 @@ export function Navbar({ variant = "light" }: NavbarProps) {
             { label: "Commercial", href: "https://factorled.pk/commercial-lighting/" },
             { label: "Industrial", href: "https://factorled.pk/industrial/" },
             { label: "About Us", href: "https://factorled.pk/about-us/" },
-            { label: "Contact", href: "https://factorled.pk/contact-us/" },
+            { label: "Contact", to: "/contact" },
           ].map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className={`${textClass} transition-colors duration-200 font-[Poppins] font-medium text-[13px] tracking-wide`}
-            >
-              {item.label}
-            </a>
+            item.to ? (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={`${textClass} transition-colors duration-200 font-[Poppins] font-medium text-[13px] tracking-wide`}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <a
+                key={item.label}
+                href={item.href}
+                className={`${textClass} transition-colors duration-200 font-[Poppins] font-medium text-[13px] tracking-wide`}
+              >
+                {item.label}
+              </a>
+            )
           ))}
         </div>
 
@@ -92,7 +102,7 @@ export function Navbar({ variant = "light" }: NavbarProps) {
             { label: "Blogs", href: "#journal" },
             { label: "Gallery", href: "https://factorled.pk/gallery/" },
             { label: "Events", href: "https://factorled.pk/events/" },
-            { label: "Contact", href: "https://factorled.pk/contact-us/" },
+            { label: "Contact", to: "/contact" },
           ].map((item, i) => (
             <motion.div
               key={item.label}

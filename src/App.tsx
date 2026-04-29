@@ -21,6 +21,7 @@ import HeroScrollSequence from "./components/HeroScrollSequence";
 import { Logo } from "./components/Logo";
 import { CategoryPage } from "./components/CategoryPage";
 import { ProductPage } from "./components/ProductPage";
+import ContactPage from "./components/ContactPage";
 
 const LOGO_FALLBACK_URL = "https://factorled.pk/wp-content/uploads/2025/01/Factor-Logo-negative-01-scaled.png";
 
@@ -126,6 +127,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/category" element={<CategoryPage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </BrowserRouter>
   );
