@@ -22,6 +22,7 @@ import { Logo } from "./components/Logo";
 import { CategoryPage } from "./components/CategoryPage";
 import { ProductPage } from "./components/ProductPage";
 import ContactPage from "./components/ContactPage";
+import { BlogPage } from "./components/BlogPage";
 
 const LOGO_FALLBACK_URL = "https://factorled.pk/wp-content/uploads/2025/01/Factor-Logo-negative-01-scaled.png";
 
@@ -128,6 +129,7 @@ export default function App() {
         <Route path="/category" element={<CategoryPage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/blog" element={<BlogPage />} />
       </Routes>
     </BrowserRouter>
   );

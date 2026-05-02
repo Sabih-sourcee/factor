@@ -17,11 +17,33 @@
   --color-text-muted: #555555;
   --color-text-dim: #AAAAAA;
 
+  /* AURORA BACKGROUND COLORS */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-blue-500: #3b82f6;
+  --color-blue-400: #60a5fa;
+  --color-blue-300: #93c5fd;
+  --color-indigo-300: #a5b4fc;
+  --color-violet-200: #ddd6fe;
+
+  /* RAW VALUES FOR AURORA COMPONENT */
+  --white: #ffffff;
+  --black: #000000;
+  --transparent: transparent;
+  --blue-500: #3b82f6;
+  --blue-400: #60a5fa;
+  --blue-300: #93c5fd;
+  --indigo-300: #a5b4fc;
+  --violet-200: #ddd6fe;
+
   /* FONTS — ONLY POPPINS */
   --font-display: "Poppins", sans-serif;
   --font-body: "Poppins", sans-serif;
   --font-mono: "Poppins", sans-serif;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {
@@ -191,6 +213,20 @@
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* AURORA BACKGROUND ANIMATION */
+  @keyframes aurora {
+    from {
+      background-position: 50% 50%, 50% 50%;
+    }
+    to {
+      background-position: 350% 50%, 350% 50%;
+    }
+  }
+
+  .animate-aurora {
+    animation: aurora 60s linear infinite;
   }
 
   .animate-float {
